@@ -1,0 +1,45 @@
+:root {
+  color-scheme: dark;
+  font-family: 'Segoe UI', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #030508;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100vh;
+}
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(46, 84, 120, 0.24), transparent 48%),
+    linear-gradient(180deg, #09111b 0%, #030508 100%);
+}
+
+canvas {
+  display: block;
+}
+
+.app-shell {
+  width: 100%;
+  min-height: 100vh;
+  padding: 12px;
+}
+
+.scene-shell {
+  width: 100%;
+  height: calc(100vh - 24px);
+  overflow: hidden;
+  border: 1px solid rgba(130, 154, 190, 0.16);
+  border-radius: 12px;
+  background: rgba(5, 9, 14, 0.92);
+}
