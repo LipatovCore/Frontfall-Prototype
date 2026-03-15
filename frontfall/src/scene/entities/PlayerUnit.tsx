@@ -9,7 +9,7 @@ type PlayerUnitProps = {
   unit: PlayerUnitData
   isSelected: boolean
   targetPosition: MapPosition | null
-  onSelect: (unitId: string) => void
+  onSelect: (unitId: string, shouldToggleSelection: boolean) => void
   onTargetReached: (unitId: string) => void
 }
 
@@ -46,7 +46,7 @@ export function PlayerUnit({
 
   function handlePointerDown(event: ThreeEvent<PointerEvent>) {
     event.stopPropagation()
-    onSelect(unit.id)
+    onSelect(unit.id, event.nativeEvent.shiftKey)
   }
 
   return (
