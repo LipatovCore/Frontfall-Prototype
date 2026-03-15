@@ -1,31 +1,65 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { MapPosition } from '../shared/types/map'
 import { initialPlayerUnits } from '../shared/config/playerUnits'
 import { TopDownCamera } from './camera/TopDownCamera'
 import { PlayerUnit } from './entities/PlayerUnit'
+import { assignGroupTargetPositions } from './systems/groupTargetPositions'
 import { SceneLights } from './world/SceneLights'
 import { Ground } from './world/Ground'
 import { MapLayout } from './world/MapLayout'
 
 export function GameScene() {
-  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null)
+  const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([])
   const [unitTargets, setUnitTargets] = useState<Record<string, MapPosition | null>>(() =>
     Object.fromEntries(initialPlayerUnits.map((unit) => [unit.id, null])),
   )
 
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.repeat || event.code !== 'Escape') {
+        return
+      }
+
+      setSelectedUnitIds([])
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   function handleGroundClick(position: MapPosition) {
-    if (!selectedUnitId) {
+    if (selectedUnitIds.length === 0) {
       return
     }
 
-    setUnitTargets((currentTargets) => ({
-      ...currentTargets,
-      [selectedUnitId]: position,
-    }))
+    const targetAssignments = assignGroupTargetPositions(selectedUnitIds, position)
+
+    setUnitTargets((currentTargets) => {
+      const nextTargets = { ...currentTargets }
+
+      for (const [unitId, targetPosition] of Object.entries(targetAssignments)) {
+        nextTargets[unitId] = targetPosition
+      }
+
+      return nextTargets
+    })
   }
 
-  function handleUnitSelect(unitId: string) {
-    setSelectedUnitId(unitId)
+  function handleUnitSelect(unitId: string, shouldToggleSelection: boolean) {
+    setSelectedUnitIds((currentSelectedUnitIds) => {
+      if (!shouldToggleSelection) {
+        return [unitId]
+      }
+
+      if (currentSelectedUnitIds.includes(unitId)) {
+        return currentSelectedUnitIds.filter((selectedUnitId) => selectedUnitId !== unitId)
+      }
+
+      return [...currentSelectedUnitIds, unitId]
+    })
   }
 
   function handleTargetReached(unitId: string) {
@@ -53,7 +87,7 @@ export function GameScene() {
         <PlayerUnit
           key={unit.id}
           unit={unit}
-          isSelected={selectedUnitId === unit.id}
+          isSelected={selectedUnitIds.includes(unit.id)}
           targetPosition={unitTargets[unit.id]}
           onSelect={handleUnitSelect}
           onTargetReached={handleTargetReached}
