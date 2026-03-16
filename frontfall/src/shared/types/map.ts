@@ -12,6 +12,7 @@ export type BaseEntityData = {
 
 type BaseControlPointData = {
   id: string
+  label: string
   position: MapPosition
   variant: ControlPointVariant
   captureRadius: number

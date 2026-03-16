@@ -1,4 +1,5 @@
 import type { ReinforcementConfig } from '../types/reinforcements'
+import { playerUnitDefinitions } from './playerUnitDefinitions'
 
 export const reinforcementConfig = {
   waveIntervalSeconds: 30,
@@ -14,22 +15,5 @@ export const reinforcementConfig = {
     [0, 0, -3.2],
     [1.8, 0, -3.2],
   ],
-  playerUnitDefinitions: [
-    {
-      id: 'player-rifle-unit',
-      label: 'Rifle Unit',
-      cost: 20,
-      team: 'player',
-      template: {
-        moveSpeed: 4.6,
-        stopDistance: 0.12,
-        maxHealth: 100,
-        currentHealth: 100,
-        attackRange: 2.35,
-        attackDamage: 12,
-        attackCooldown: 0.75,
-        attackCooldownRemaining: 0,
-      },
-    },
-  ],
+  playerUnitDefinitions,
 } satisfies ReinforcementConfig

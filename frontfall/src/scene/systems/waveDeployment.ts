@@ -37,8 +37,9 @@ export function queuePlayerWaveUnit(
   economyState: EconomyState,
   waveQueue: WaveQueueItem[],
   definition: ReinforcementUnitDefinition,
+  isUnlocked: boolean,
 ): QueueWaveUnitResult {
-  if (definition.team !== 'player' || economyState.player.manpower < definition.cost) {
+  if (!isUnlocked || definition.team !== 'player' || economyState.player.manpower < definition.cost) {
     return {
       nextEconomyState: economyState,
       nextWaveQueue: waveQueue,
