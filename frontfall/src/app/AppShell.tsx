@@ -3,6 +3,11 @@ import { useEffect, useRef, useState } from 'react'
 import { createInitialControlPointStates } from '../scene/systems/controlPointCapture'
 import { createInitialEconomyState } from '../scene/systems/manpowerEconomy'
 import {
+  createInitialPlayerUnlockState,
+  isPlayerUnitDefinitionUnlocked,
+  syncPlayerUnlockState,
+} from '../scene/systems/playerUnlocks'
+import {
   createPlayerDeploymentBatch,
   getPlayerReinforcementDefinition,
   queuePlayerWaveUnit,
@@ -11,6 +16,7 @@ import { mapConfig } from '../shared/config/mapConfig'
 import { reinforcementConfig } from '../shared/config/reinforcements'
 import type { SelectionBox } from '../shared/types/selection'
 import type { DeploymentBatch, WaveQueueItem } from '../shared/types/reinforcements'
+import type { PlayerUnlockState } from '../shared/types/unlocks'
 import { GameScene } from '../scene/GameScene'
 import { ManpowerHud } from './ManpowerHud'
 import { ReinforcementPanel } from './ReinforcementPanel'
@@ -43,6 +49,9 @@ export function AppShell() {
   const [deploymentCycle, setDeploymentCycle] = useState(1)
   const [deploymentBatch, setDeploymentBatch] = useState<DeploymentBatch | null>(null)
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null)
+  const [playerUnlockState, setPlayerUnlockState] = useState<PlayerUnlockState>(() =>
+    createInitialPlayerUnlockState(),
+  )
   const economyStateRef = useRef(economyState)
   const waveQueueRef = useRef(waveQueue)
 
@@ -55,6 +64,12 @@ export function AppShell() {
   useEffect(() => {
     waveQueueRef.current = waveQueue
   }, [waveQueue])
+
+  useEffect(() => {
+    setPlayerUnlockState((currentUnlockState) =>
+      syncPlayerUnlockState(currentUnlockState, controlPoints),
+    )
+  }, [controlPoints])
 
   useEffect(() => {
     let lastTimestamp = performance.now()
@@ -101,7 +116,12 @@ export function AppShell() {
       return
     }
 
-    const result = queuePlayerWaveUnit(economyStateRef.current, waveQueueRef.current, definition)
+    const result = queuePlayerWaveUnit(
+      economyStateRef.current,
+      waveQueueRef.current,
+      definition,
+      isPlayerUnitDefinitionUnlocked(playerUnlockState, definition.id),
+    )
 
     if (!result.queued) {
       return
@@ -123,6 +143,7 @@ export function AppShell() {
         <ReinforcementPanel
           deploymentCycle={deploymentCycle}
           economyState={economyState}
+          playerUnlockState={playerUnlockState}
           waveQueue={waveQueue}
           waveTimerSeconds={waveTimerSeconds}
           onQueueUnit={handleQueueUnit}

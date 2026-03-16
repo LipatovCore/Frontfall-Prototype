@@ -55,6 +55,7 @@ export const mapConfig = {
   controlPoints: [
     {
       id: 'unlock-spire',
+      label: 'Spire Node',
       type: 'unlock',
       variant: 'spire',
       position: randomPointPositions[0],
@@ -62,6 +63,7 @@ export const mapConfig = {
     },
     {
       id: 'unlock-vault',
+      label: 'Vault Node',
       type: 'unlock',
       variant: 'vault',
       position: randomPointPositions[1],
@@ -69,6 +71,7 @@ export const mapConfig = {
     },
     {
       id: 'resource-crystal',
+      label: 'Crystal Well',
       type: 'resource',
       variant: 'crystal',
       position: randomPointPositions[2],
@@ -77,6 +80,7 @@ export const mapConfig = {
     },
     {
       id: 'resource-relay',
+      label: 'Relay Hub',
       type: 'resource',
       variant: 'relay',
       position: randomPointPositions[3],
